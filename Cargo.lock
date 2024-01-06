@@ -598,11 +598,13 @@ checksum = "25cbce373ec4653f1a01a31e8a5e5ec0c622dc27ff9c4e6606eefef5cbbed4a5"
 name = "fighting-tracker"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "rocket",
  "shuttle-rocket",
  "shuttle-runtime",
  "shuttle-shared-db",
  "sqlx",
+ "thiserror",
  "tokio",
 ]
 
@@ -2823,9 +2825,9 @@ dependencies = [
 
 [[package]]
 name = "subtle"
-version = "2.5.0"
+version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
+checksum = "6bdef32e8150c2a081110b42772ffe7d7c9032b606bc226c8260fd97e0976601"
 
 [[package]]
 name = "syn"

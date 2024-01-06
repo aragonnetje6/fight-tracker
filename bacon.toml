@@ -6,36 +6,36 @@ default_job = "clippy-all"
 [jobs]
 
 [jobs.check]
-command = ["cargo", "check", "--color", "always"]
+command = ["cargo", "mommy", "check", "--color", "always"]
 need_stdout = false
 
 [jobs.check-all]
-command = ["cargo", "check", "--all-targets", "--color", "always"]
+command = ["cargo", "mommy", "check", "--all-targets", "--color", "always"]
 need_stdout = false
 watch = ["tests", "benches", "examples"]
 
 [jobs.clippy]
-command = ["cargo", "clippy", "--color", "always", "--", "-W", "clippy::pedantic", "-W", "clippy::unwrap_used"]
+command = ["cargo", "mommy", "clippy", "--color", "always", "--", "-W", "clippy::pedantic", "-W", "clippy::unwrap_used"]
 need_stdout = false
 
 [jobs.clippy-all]
-command = ["cargo", "clippy", "--all-targets", "--color", "always", "--", "-W", "clippy::pedantic", "-W", "clippy::unwrap_used"]
+command = ["cargo", "mommy", "clippy", "--all-targets", "--color", "always", "--", "-W", "clippy::pedantic", "-W", "clippy::unwrap_used"]
 need_stdout = false
 watch = ["tests", "benches", "examples"]
 
 [jobs.test]
-command = ["cargo", "test", "--color", "always"]
+command = ["cargo", "mommy", "test", "--color", "always"]
 need_stdout = true
 watch = ["tests"]
 
 [jobs.doc]
-command = ["cargo", "doc", "--color", "always", "--all-features"]
+command = ["cargo", "mommy", "doc", "--color", "always", "--all-features"]
 need_stdout = false
 
 # if the doc compiles, then it opens in your browser and bacon switches
 # to the previous job
 [jobs.doc-open]
-command = ["cargo", "doc", "--color", "always", "--no-deps", "--open"]
+command = ["cargo", "mommy", "doc", "--color", "always", "--no-deps", "--open"]
 need_stdout = false
 on_success = "job:doc" # so that we don't open the browser at each change
 
@@ -44,7 +44,7 @@ on_success = "job:doc" # so that we don't open the browser at each change
 # way. Don't forget the `--color always` part or the errors won't be
 # properly parsed.
 [jobs.run]
-command = ["cargo", "run", "--color", "always"]
+command = ["cargo", "mommy", "run", "--color", "always"]
 need_stdout = true
 allow_warnings = true
 
