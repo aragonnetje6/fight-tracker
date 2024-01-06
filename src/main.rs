@@ -22,11 +22,12 @@ async fn up(pool: &State<PgPool>) -> Result<String> {
 
 #[post("/down")]
 async fn down(pool: &State<PgPool>) -> Result<String> {
+    let mut tx = pool.begin().await?;
     sqlx::query("DELETE FROM clicks WHERE date IN (SELECT MAX(date) FROM clicks)")
-        .execute(&**pool)
+        .execute(&mut *tx)
         .await?;
     let count = sqlx::query!("SELECT COUNT(*) AS count FROM clicks")
-        .fetch_one(&**pool)
+        .fetch_one(&mut *tx)
         .await?;
     Ok(count.count.ok_or(Error::NotFoundError)?.to_string())
 }
