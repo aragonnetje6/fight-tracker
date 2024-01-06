@@ -1,19 +1,14 @@
+mod error;
 mod result;
+
+use error::Error;
+use result::Result;
 
 use rocket::{fs::FileServer, post, routes, State};
 use sqlx::PgPool;
 
-#[derive(thiserror::Error, Debug)]
-struct NotFoundError;
-
-impl std::fmt::Display for NotFoundError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "No value found")
-    }
-}
-
 #[post("/up")]
-async fn up(pool: &State<PgPool>) -> result::Result<String> {
+async fn up(pool: &State<PgPool>) -> Result<String> {
     let mut tx = pool.begin().await?;
     sqlx::query("INSERT INTO clicks VALUES (CURRENT_TIMESTAMP)")
         .execute(&mut *tx)
@@ -22,18 +17,18 @@ async fn up(pool: &State<PgPool>) -> result::Result<String> {
         .fetch_one(&mut *tx)
         .await?;
     tx.commit().await?;
-    Ok(count.count.ok_or(NotFoundError)?.to_string())
+    Ok(count.count.ok_or(Error::NotFoundError)?.to_string())
 }
 
 #[post("/down")]
-async fn down(pool: &State<PgPool>) -> result::Result<String> {
+async fn down(pool: &State<PgPool>) -> Result<String> {
     sqlx::query("DELETE FROM clicks WHERE date IN (SELECT MAX(date) FROM clicks)")
         .execute(&**pool)
         .await?;
     let count = sqlx::query!("SELECT COUNT(*) AS count FROM clicks")
         .fetch_one(&**pool)
         .await?;
-    Ok(count.count.ok_or(NotFoundError)?.to_string())
+    Ok(count.count.ok_or(Error::NotFoundError)?.to_string())
 }
 
 #[shuttle_runtime::main]
