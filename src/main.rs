@@ -13,8 +13,8 @@ impl std::fmt::Display for NotFoundError {
 }
 
 #[post("/up")]
-async fn up(pool: &State<DBPool>) -> result::Result<String> {
-    let mut tx = pool.0.begin().await?;
+async fn up(pool: &State<PgPool>) -> result::Result<String> {
+    let mut tx = pool.begin().await?;
     sqlx::query("INSERT INTO clicks VALUES (CURRENT_TIMESTAMP)")
         .execute(&mut *tx)
         .await?;
@@ -22,23 +22,19 @@ async fn up(pool: &State<DBPool>) -> result::Result<String> {
         .fetch_one(&mut *tx)
         .await?;
     tx.commit().await?;
-    Ok(count.count.map(|x| x.to_string()).ok_or(NotFoundError)?)
+    Ok(count.count.ok_or(NotFoundError)?.to_string())
 }
 
 #[post("/down")]
-async fn down(pool: &State<DBPool>) -> String {
+async fn down(pool: &State<PgPool>) -> result::Result<String> {
     sqlx::query("DELETE FROM clicks WHERE date IN (SELECT MAX(date) FROM clicks)")
-        .execute(&pool.0)
-        .await
-        .expect("db failed");
+        .execute(&**pool)
+        .await?;
     let count = sqlx::query!("SELECT COUNT(*) AS count FROM clicks")
-        .fetch_one(&pool.0)
-        .await
-        .expect("db failed 2");
-    count.count.expect("clicks failed").to_string()
+        .fetch_one(&**pool)
+        .await?;
+    Ok(count.count.ok_or(NotFoundError)?.to_string())
 }
-
-struct DBPool(PgPool);
 
 #[shuttle_runtime::main]
 #[allow(clippy::no_effect_underscore_binding)]
@@ -50,7 +46,7 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::Sh
     let rocket = rocket::build()
         .mount("/api", routes![up, down])
         .mount("/", FileServer::from("static/"))
-        .manage(DBPool(pool));
+        .manage(pool);
 
     Ok(rocket.into())
 }
