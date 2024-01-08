@@ -1,3 +1,4 @@
+mod api;
 mod error;
 mod result;
 
@@ -40,7 +41,7 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::Sh
         .await
         .map_err(shuttle_runtime::CustomError::new)?;
     let rocket = rocket::build()
-        .mount("/api", routes![up, down])
+        .mount("/api", routes![up, down, api::matches::post])
         .mount("/", FileServer::from("static/"))
         .manage(pool);
 
