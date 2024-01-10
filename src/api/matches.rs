@@ -72,5 +72,5 @@ pub async fn get<'a>(
     game: &'a str,
     character: &'a str,
 ) -> Result<MatchOverview<'a>> {
-    Ok(MatchOverview::new(&**pool, game, character).await.unwrap())
+    MatchOverview::new(&**pool, game, character).await
 }
