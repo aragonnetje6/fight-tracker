@@ -1,0 +1,27 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO match (result, character_id, timestamp)\n        VALUES ($1, (\n            SELECT character.id\n            FROM character\n            JOIN game ON game.id = character.game_id\n            WHERE character.name = $2\n            AND game.name = $3\n        ), CURRENT_TIMESTAMP)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        {
+          "Custom": {
+            "name": "matchresult",
+            "kind": {
+              "Enum": [
+                "win",
+                "loss",
+                "draw"
+              ]
+            }
+          }
+        },
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d43a9b47248da8813a9a5b6eda296ebe76fac86ee9de9833e6ab2d530960bc9d"
+}

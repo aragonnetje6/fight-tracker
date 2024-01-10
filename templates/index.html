@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>This is a placeholder but eventually this will be the fighting game tracker</h1>
+<p id="counter" hx-swap="innerHTML" hx-get=/api/count hx-trigger="load">Loading...</p>
+<button hx-post="/api/up" hx-target="#counter">
+  Up
+</button>
+<button hx-post="/api/down" hx-target="#counter">
+  Down
+</button>
+{% endblock %}
