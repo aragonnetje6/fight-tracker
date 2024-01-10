@@ -50,7 +50,7 @@ impl Display for MatchResult {
 }
 
 pub async fn create_match<'c>(
-    exec: impl sqlx::Executor<'c, Database = sqlx::Postgres>,
+    executor: impl sqlx::Executor<'c, Database = sqlx::Postgres>,
     game: &str,
     character: &str,
     match_result: MatchResult,
@@ -68,7 +68,57 @@ pub async fn create_match<'c>(
         character,
         game,
     )
-    .execute(exec)
+    .execute(executor)
+    .await?;
+    Ok(())
+}
+
+#[derive(Debug)]
+pub struct MatchOverview {
+    pub result: MatchResult,
+    pub count: i64,
+}
+
+pub async fn get_match_overview<'c>(
+    executor: impl sqlx::Executor<'c, Database = sqlx::Postgres>,
+    game: &str,
+    character: &str,
+) -> Result<Vec<MatchOverview>> {
+    Ok(sqlx::query_as!(MatchOverview,
+        "SELECT match.result AS \"result: MatchResult\", COUNT(*) AS \"count!\"
+        FROM match
+        JOIN character ON character.id = match.character_id
+        JOIN game ON character.game_id = game.id
+        WHERE game.name = $1 
+        AND character.name = $2
+        GROUP BY match.result",
+        game,
+        character
+    )
+    .fetch_all(executor)
+    .await?)
+
+}
+
+pub async fn delete_last<'c>(
+    executor: impl sqlx::Executor<'c, Database = sqlx::Postgres>,
+    game: &str,
+    character: &str,
+) -> Result<()> {
+    sqlx::query!(
+        "DELETE FROM match
+        WHERE id = (
+            SELECT max(match.id)
+            FROM match
+            JOIN character ON match.character_id = character.id
+            JOIN game ON character.game_id = game.id
+            WHERE game.name = $1
+                AND character.name = $2
+        )",
+        game,
+        character,
+    )
+    .execute(executor)
     .await?;
     Ok(())
 }
