@@ -2,11 +2,5 @@
 
 {% block content %}
 <h1>This is a placeholder but eventually this will be the fighting game tracker</h1>
-<p id="counter" hx-swap="innerHTML" hx-get=/api/count hx-trigger="load">Loading...</p>
-<button hx-post="/api/up" hx-target="#counter">
-  Up
-</button>
-<button hx-post="/api/down" hx-target="#counter">
-  Down
-</button>
+<div id="match_results" hx-get="/api/matches/testgame/testcharacter" hx-trigger="load">Loading...</div></button>
 {% endblock %}

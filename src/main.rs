@@ -62,7 +62,14 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::Sh
     let rocket = rocket::build()
         .mount(
             "/api",
-            routes![up, down, count, api::matches::post, api::matches::delete],
+            routes![
+                up,
+                down,
+                count,
+                api::matches::post,
+                api::matches::delete,
+                api::matches::get
+            ],
         )
         .mount("/", routes![index])
         .manage(pool);

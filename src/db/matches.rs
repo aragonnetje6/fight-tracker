@@ -84,7 +84,8 @@ pub async fn get_match_overview<'c>(
     game: &str,
     character: &str,
 ) -> Result<Vec<MatchOverview>> {
-    Ok(sqlx::query_as!(MatchOverview,
+    Ok(sqlx::query_as!(
+        MatchOverview,
         "SELECT match.result AS \"result: MatchResult\", COUNT(*) AS \"count!\"
         FROM match
         JOIN character ON character.id = match.character_id
@@ -97,7 +98,6 @@ pub async fn get_match_overview<'c>(
     )
     .fetch_all(executor)
     .await?)
-
 }
 
 pub async fn delete_last<'c>(

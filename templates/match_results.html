@@ -1,0 +1,23 @@
+<div id=match_results hx-swap=outerHTML>
+  <table>
+    <tr>
+      <td>Wins</td>
+      <td>{{ wins }}</td>
+      <td><button hx-post="/api/matches/{{ game }}/{{ character }}/win" hx-target="closest #match_results">Add</button>
+      </td>
+    </tr>
+    <tr>
+      <td>Draws</td>
+      <td>{{ draws }}</td>
+      <td><button hx-post="/api/matches/{{ game }}/{{ character }}/draw" hx-target="closest #match_results">Add</button>
+      </td>
+    </tr>
+    <tr>
+      <td>Losses</td>
+      <td>{{ losses }}</td>
+      <td><button hx-post="/api/matches/{{ game }}/{{ character }}/loss" hx-target="closest #match_results">Add</button>
+      </td>
+    </tr>
+  </table>
+  <button hx-delete="/api/matches/{{ game }}/{{ character }}" hx-target="closest #match_results">Undo</button>
+</div>

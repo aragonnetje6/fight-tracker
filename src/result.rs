@@ -1,5 +1,6 @@
 pub type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug)]
 pub struct Error(anyhow::Error);
 
 impl<'r, 'o: 'r> rocket::response::Responder<'r, 'o> for Error {
