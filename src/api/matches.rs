@@ -90,8 +90,9 @@ pub async fn post(
     .await?
     .into_iter()
     .fold(&mut count, |acc, x| {
-        write!(acc, r"<tr><td>{}</td><td>{}</td></tr>", x.result, x.count).map(|x| acc)
+        write!(acc, r"<tr><td>{}</td><td>{}</td></tr>", x.result, x.count).expect("fuck off");
+        acc
     });
     tx.commit().await?;
-    Ok(format!(r"<table>{}</table>", count))
+    Ok(format!(r"<table>{count}</table>"))
 }
