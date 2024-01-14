@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO character (name, game_id)\n        VALUES ($1, (SELECT id FROM game WHERE name = $2))",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "efe5d3b63aa3f0d75d1a26acb607afa9bcdc66af05ea447f25601e850229aa39"
+}

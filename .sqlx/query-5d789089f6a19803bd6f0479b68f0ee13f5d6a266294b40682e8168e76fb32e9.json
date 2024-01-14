@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT character.name FROM character JOIN game ON game.id = character.game_id WHERE game.name = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "5d789089f6a19803bd6f0479b68f0ee13f5d6a266294b40682e8168e76fb32e9"
+}
