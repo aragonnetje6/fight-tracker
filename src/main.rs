@@ -3,45 +3,8 @@ mod db;
 mod error;
 mod result;
 
-use error::Error;
-use result::Result;
-
-use rocket::{get, post, routes, State};
+use rocket::{get, routes};
 use sqlx::PgPool;
-
-#[post("/up")]
-async fn up(pool: &State<PgPool>) -> Result<String> {
-    let mut tx = pool.begin().await?;
-    sqlx::query("INSERT INTO clicks VALUES (CURRENT_TIMESTAMP)")
-        .execute(&mut *tx)
-        .await?;
-    let count = sqlx::query!("SELECT COUNT(*) AS count FROM clicks")
-        .fetch_one(&mut *tx)
-        .await?;
-    tx.commit().await?;
-    Ok(count.count.ok_or(Error::NotFoundError)?.to_string())
-}
-
-#[post("/down")]
-async fn down(pool: &State<PgPool>) -> Result<String> {
-    let mut tx = pool.begin().await?;
-    sqlx::query("DELETE FROM clicks WHERE date IN (SELECT MAX(date) FROM clicks)")
-        .execute(&mut *tx)
-        .await?;
-    let count = sqlx::query!("SELECT COUNT(*) AS count FROM clicks")
-        .fetch_one(&mut *tx)
-        .await?;
-    Ok(count.count.ok_or(Error::NotFoundError)?.to_string())
-}
-
-#[get("/count")]
-async fn count(pool: &State<PgPool>) -> Result<String> {
-    let mut tx = pool.begin().await?;
-    let count = sqlx::query!("SELECT COUNT(*) AS count FROM clicks")
-        .fetch_one(&mut *tx)
-        .await?;
-    Ok(count.count.ok_or(Error::NotFoundError)?.to_string())
-}
 
 #[derive(askama::Template)]
 #[template(path = "index.html")]
@@ -63,12 +26,13 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::Sh
         .mount(
             "/api",
             routes![
-                up,
-                down,
-                count,
                 api::matches::post,
                 api::matches::delete,
-                api::matches::get
+                api::matches::get,
+                api::games::get,
+                api::games::post,
+                api::characters::get,
+                api::characters::post,
             ],
         )
         .mount("/", routes![index])
