@@ -2,5 +2,5 @@
 
 {% block content %}
 <h1>This is a placeholder but eventually this will be the fighting game tracker</h1>
-<div hx-get="/api/games/" hx-trigger="load" hx-swap="outerHTML">Loading...</div>
+{{ games|safe }}
 {% endblock %}

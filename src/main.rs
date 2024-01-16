@@ -3,16 +3,29 @@ mod db;
 mod error;
 mod result;
 
-use rocket::{get, routes};
+use api::games::GameOverview;
+use rocket::{get, routes, State};
 use sqlx::PgPool;
 
 #[derive(askama::Template)]
 #[template(path = "index.html")]
-struct IndexTemplate;
+struct IndexTemplate {
+    games: GameOverview,
+}
+
+impl<'c> IndexTemplate {
+    async fn new(
+        executor: impl sqlx::Executor<'c, Database = sqlx::Postgres>,
+    ) -> result::Result<Self> {
+        Ok(Self {
+            games: GameOverview::new(executor).await?,
+        })
+    }
+}
 
 #[get("/")]
-fn index() -> IndexTemplate {
-    IndexTemplate
+async fn index(pool: &State<PgPool>) -> result::Result<IndexTemplate> {
+    Ok(IndexTemplate::new(&**pool).await?)
 }
 
 #[derive(askama::Template)]

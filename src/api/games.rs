@@ -11,7 +11,7 @@ pub struct GameOverview {
 }
 
 impl<'c> GameOverview {
-    async fn new(executor: impl sqlx::Executor<'c, Database = sqlx::Postgres>) -> Result<Self> {
+    pub async fn new(executor: impl sqlx::Executor<'c, Database = sqlx::Postgres>) -> Result<Self> {
         Ok(Self {
             games: db::games::get_all(executor).await?,
         })
