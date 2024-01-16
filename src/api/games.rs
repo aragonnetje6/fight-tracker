@@ -1,7 +1,7 @@
 use crate::db;
 use crate::result::Result;
 use askama::Template;
-use rocket::{get, post, State};
+use rocket::{form::Form, get, post, FromForm, State};
 use sqlx::PgPool;
 
 #[derive(Template)]
@@ -18,13 +18,19 @@ impl<'c> GameOverview {
     }
 }
 
-#[post("/games/<name>")]
-pub async fn post(pool: &State<PgPool>, name: &str) -> Result<GameOverview> {
-    let mut tx = pool.begin().await?;
-    db::games::create(&mut *tx, name).await?;
-    let overview = GameOverview::new(&mut *tx).await?;
-    tx.commit().await?;
-    Ok(overview)
+#[derive(Template)]
+#[template(path = "add_game_success.html")]
+pub struct AddGameSuccess;
+
+#[derive(FromForm)]
+pub struct GameForm<'a> {
+    game_name: &'a str,
+}
+
+#[post("/games", data = "<game_form>")]
+pub async fn post(pool: &State<PgPool>, game_form: Form<GameForm<'_>>) -> Result<AddGameSuccess> {
+    db::games::create(&**pool, game_form.game_name).await?;
+    Ok(AddGameSuccess)
 }
 
 #[get("/games")]

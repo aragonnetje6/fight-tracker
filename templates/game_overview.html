@@ -1,8 +1,9 @@
 <div id="game_overview">
   <ul>
     {% for game in games %}
-    <li><button hx-get="/api/characters/{{ game }}" hx-target="#character_overview">{{ game }}</a></li>
+    <li><a hx-boost="true" href="/api/characters/{{ game }}" hx-target="#character_overview">{{ game }}</a></li>
     {% endfor %}
+    <li><a href="/add_game">Add Game</a></li>
   </ul>
 </div>
 

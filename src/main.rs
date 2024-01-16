@@ -15,6 +15,15 @@ fn index() -> IndexTemplate {
     IndexTemplate
 }
 
+#[derive(askama::Template)]
+#[template(path = "add_game.html")]
+struct AddGameTemplate;
+
+#[get("/add_game")]
+fn add_game() -> AddGameTemplate {
+    AddGameTemplate
+}
+
 #[shuttle_runtime::main]
 #[allow(clippy::no_effect_underscore_binding)]
 async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::ShuttleRocket {
@@ -35,7 +44,7 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::Sh
                 api::characters::post,
             ],
         )
-        .mount("/", routes![index])
+        .mount("/", routes![index, add_game])
         .manage(pool);
 
     Ok(rocket.into())

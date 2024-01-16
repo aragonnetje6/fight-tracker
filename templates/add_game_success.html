@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Game</h1>
+<a href="/">&lt;Back</a><br>
+<form action="/api/games" method="POST" hx-boost="true">
+  <label for="game_name">Game name:</label><br>
+  <input type="text" name="game_name"><br>
+  <input type="submit" value="Submit">
+</form>
+<h3>Game added succesfully!</h3>
+{% endblock %}
