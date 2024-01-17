@@ -1,7 +1,7 @@
-use crate::db;
+use crate::db::{self, characters};
 use crate::result::Result;
 use askama::Template;
-use rocket::{get, post, State};
+use rocket::{form::Form, get, post, FromForm, State};
 use sqlx::PgPool;
 
 #[derive(Template)]
@@ -23,17 +23,27 @@ impl<'c> CharacterOverview {
     }
 }
 
-#[post("/characters/<game>/<character_name>")]
+#[derive(Template)]
+#[template(path = "add_character_success.html")]
+pub struct AddCharacterSuccess {
+    normal: crate::AddCharacterTemplate,
+}
+
+#[derive(FromForm)]
+pub struct CharacterForm<'a> {
+    game: &'a str,
+    character_name: &'a str,
+}
+
+#[post("/characters", data = "<character_form>")]
 pub async fn post(
     pool: &State<PgPool>,
-    game: &str,
-    character_name: &str,
-) -> Result<CharacterOverview> {
-    let mut tx = pool.begin().await?;
-    db::characters::create(&mut *tx, game, character_name).await?;
-    let overview = CharacterOverview::new(&mut *tx, game).await?;
-    tx.commit().await?;
-    Ok(overview)
+    character_form: Form<CharacterForm<'_>>,
+) -> Result<AddCharacterSuccess> {
+    db::characters::create(&**pool, character_form.game, character_form.character_name).await?;
+    Ok(AddCharacterSuccess {
+        normal: crate::AddCharacterTemplate::new(&**pool, Some(character_form.game)).await?,
+    })
 }
 
 #[get("/characters/<game>")]

@@ -37,6 +37,43 @@ fn add_game() -> AddGameTemplate {
     AddGameTemplate
 }
 
+#[derive(askama::Template)]
+#[template(path = "add_character.html")]
+struct AddCharacterTemplate {
+    games: Vec<Game>,
+}
+
+impl<'c> AddCharacterTemplate {
+    async fn new(
+        executor: impl sqlx::Executor<'c, Database = sqlx::Postgres>,
+        selected_game: Option<&str>,
+    ) -> result::Result<Self> {
+        Ok(AddCharacterTemplate {
+            games: db::games::get_all(executor)
+                .await?
+                .into_iter()
+                .map(|name| {
+                    let selected = selected_game.is_some_and(|g| g == name);
+                    Game { name, selected }
+                })
+                .collect(),
+        })
+    }
+}
+
+struct Game {
+    name: String,
+    selected: bool,
+}
+
+#[get("/add_character?<game>")]
+async fn add_character(
+    game: Option<&str>,
+    pool: &State<PgPool>,
+) -> result::Result<AddCharacterTemplate> {
+    AddCharacterTemplate::new(&**pool, game).await
+}
+
 #[shuttle_runtime::main]
 #[allow(clippy::no_effect_underscore_binding)]
 async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::ShuttleRocket {
@@ -57,7 +94,7 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_rocket::Sh
                 api::characters::post,
             ],
         )
-        .mount("/", routes![index, add_game])
+        .mount("/", routes![index, add_game, add_character])
         .manage(pool);
 
     Ok(rocket.into())

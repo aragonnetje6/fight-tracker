@@ -3,6 +3,7 @@
     {% for character in characters %}
     <li><button hx-get="/api/matches/{{ game }}/{{ character }}" hx-target="#match_results">{{ character }}</a></li>
     {% endfor %}
+    <li><a href="/add_character?game={{ game }}">Add Character</a></li>
   </ul>
 </div>
 

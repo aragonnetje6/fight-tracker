@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Character</h1>
+<a href="/">&lt;Back</a><br>
+<form action="/api/characters" method="POST" hx-boost="true" id="character_form">
+  <label for="game">Game:</label><br>
+  <select name="game">
+    {% for game in games %}
+    <option value="{{ game.name }}" {% if game.selected %}selected{% endif %}>{{ game.name }}</option>
+    {% endfor %}
+  </select><br>
+  <label for="character_name">Character name:</label><br>
+  <input type="text" name="character_name"><br>
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}
