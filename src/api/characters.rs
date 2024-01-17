@@ -1,4 +1,4 @@
-use crate::db::{self, characters};
+use crate::db;
 use crate::result::Result;
 use askama::Template;
 use rocket::{form::Form, get, post, FromForm, State};

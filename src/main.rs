@@ -25,7 +25,7 @@ impl<'c> IndexTemplate {
 
 #[get("/")]
 async fn index(pool: &State<PgPool>) -> result::Result<IndexTemplate> {
-    Ok(IndexTemplate::new(&**pool).await?)
+    IndexTemplate::new(&**pool).await
 }
 
 #[derive(askama::Template)]
